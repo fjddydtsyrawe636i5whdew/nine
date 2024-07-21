@@ -86,6 +86,10 @@ class Browser:
         if self.proxy:
             options.add_argument(f'--proxy-server={self.proxy}')
 
+        # Obtain webdriver chrome driver version
+        version = self.getChromeVersion()
+        major = int(version.split(".")[0])
+
         driver = webdriver.Chrome(
             service=ChromeService(ChromeDriverManager().install()),
             options=options,
@@ -194,3 +198,14 @@ class Browser:
             except Exception:  # pylint: disable=broad-except
                 return ("en", "US")
         return (lang, geo)
+
+    def getChromeVersion(self) -> str:
+        chrome_options = ChromeOptions()
+        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--no-sandbox")
+        driver = WebDriver(options=chrome_options)
+        version = driver.capabilities["browserVersion"]
+
+        driver.quit()
+
+        return version
